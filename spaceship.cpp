@@ -7,7 +7,7 @@ using namespace std;
 vector<string> vec{"           \\\\\\_____", "        ###[==_____>",
                    "           ///     "};
 vector<string> enemy{"    \\---/", "  _{ {0} }_", " {_________}"};
-void draw_space_ship(int &x, int &y, int key) {
+auto move_space_ship(int &x, int &y, int key,int &check) {
   if (key == 115) {
     y++;
     move(y, x);
@@ -47,16 +47,19 @@ void draw_space_ship(int &x, int &y, int key) {
 }
 int main() {
   initscr();
-  int x = 0;
-  int y = 0;
+  auto x = 0;
+  auto y = 0;
+  auto check = 0;
   move(y, x);
   for (int i = 0; i < vec.size(); i++) {
     printw("%s\n", vec[i].c_str());
   }
   for (;;) {
+    move(0,0);
     int b = getch();
+    move(y,x);
     clear();
-    draw_space_ship(x, y, b);
+    move_space_ship(x, y, b,check);
     if (b == 27) {
       break;
     }
