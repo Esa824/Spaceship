@@ -82,7 +82,7 @@ void move_space_ship(int &x, int &y, int key) {
     // making it shoot;
     int X = x + 21;
     int Y = y + 1;
-    while (x != 59) {
+    while (X != 60) {
       move(0, 0);
       getch();
       remove_old_shoot(Y, X - 1);
