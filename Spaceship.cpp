@@ -2,6 +2,7 @@
 #include "Print_star.h"
 #include "Remove_old_shoot.h"
 #include "Remove_star.h"
+#include <cstdlib>
 #include <limits.h>
 #include <ncurses.h>
 #include <string>
@@ -9,6 +10,13 @@
 #include <unordered_map>
 #include <vector>
 using namespace std;
+struct bullet {
+  int y;
+  int x;
+  int tick;
+  int check;
+  bullet *next;
+};
 vector<string> spaceship{"           \\\\\\_____", "        ###[==_____>",
                          "           ///     "};
 vector<string> number_of_spaces{"        ", "            ", "   "};
@@ -78,19 +86,6 @@ void move_space_ship(int &x, int &y, int key) {
       move(Y, x);
     }
   }
-  if (key == 32) {
-    // making it shoot;
-    int X = x + 21;
-    int Y = y + 1;
-    while (X != 60) {
-      move(0, 0);
-      getch();
-      remove_old_shoot(Y, X - 1);
-      usleep(19999);
-      print_shoot(Y, X);
-      X++;
-    }
-  }
 }
 void print_main_menu() {
   unordered_map<int, vector<int>> map;
@@ -131,16 +126,21 @@ void print_helth_bar() {
   move(5, 0);
   printw("    *");
 }
+bullet *create_memory() {
+  bullet *ptr = (bullet *)malloc(sizeof(bullet));
+  return ptr;
+}
 int main() {
   initscr();
   start_color();
   print_main_menu();
+  bullet *ptr = create_memory();
+  ptr->check = 0;
   int count = 0;
   auto x = 0;
   auto y = 0;
   int x_star = 99;
   int y_star = 5;
-  int check = 0;
   int check_two = 0;
   int helth_bar_lives = 3;
   move(y, x);
@@ -150,7 +150,7 @@ int main() {
   nodelay(stdscr, true);
   for (;;) {
     if (x_star > -1) {
-      usleep(39999);
+      usleep(29999);
       x_star--;
       remove_star(x_star + 1, y_star);
       if (x_star != -1) {
@@ -159,6 +159,31 @@ int main() {
     }
     move(0, 0);
     int b = getch();
+    if (ptr->tick == 199) {
+      ptr->tick = 0;
+      ptr->check = 0;
+    }
+    // making it shoot
+    if (b == 32 && ptr->check == 0) {
+      ptr->y = y + 1;
+      ptr->x = x + 21;
+      ptr->tick = 0;
+      ptr->check = 1;
+    }
+    if (ptr->check == 1) {
+      if (x_star < 0) {
+        usleep(19999);
+      }
+      if (ptr->tick != 198) {
+        move(ptr->y, ptr->x);
+      }
+      printw("-");
+      move(ptr->y, ptr->x - 1);
+      printw(" ");
+      ptr->x++;
+      ptr->tick++;
+    }
+    // end making it shoot
     if (b == 27) {
       clear();
       print_main_menu();
