@@ -207,21 +207,8 @@ int main() {
     }
     move(0, 0);
     int b = getch();
-    // making it shoot
     usleep(4999);
     shoot(bullet_ptr, b, y, x);
-    // end making it shoot
-    if (b == 27) {
-      clear();
-      print_main_menu();
-      move(y, x);
-      int Y = y;
-      for (int i = 0; i < spaceship.size(); i++) {
-        printw("%s\n", spaceship[i].c_str());
-        Y++;
-        move(Y, x);
-      }
-    }
     move_space_ship(x, y, b);
   }
 }
