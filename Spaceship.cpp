@@ -1,5 +1,3 @@
-#include "Print_star.h"
-#include "Remove_star.h"
 #include <cstdlib>
 #include <limits.h>
 #include <ncurses.h>
@@ -197,14 +195,16 @@ int main() {
   for (;;) {
     if (sec_star_ptr->x > -1) {
       sec_star_ptr->x--;
-      remove_star(sec_star_ptr->x + 1, sec_star_ptr->y);
+      move(sec_star_ptr->y, sec_star_ptr->x + 1);
+      printw(" ");
       if (sec_star_ptr->x != -1) {
-        print_star(sec_star_ptr->x, sec_star_ptr->y);
+        move(sec_star_ptr->y, sec_star_ptr->x);
+        printw(".");
       }
     } else {
       sec_star_ptr->x = myRand(20, 200);
     }
-    if(sec_star_ptr->next != NULL){
+    if (sec_star_ptr->next != NULL) {
       sec_star_ptr = sec_star_ptr->next;
     } else {
       sec_star_ptr = star_ptr;
