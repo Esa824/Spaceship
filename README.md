@@ -1,5 +1,5 @@
 # space-ship
-you compile like this g++ -g -l ncuresers Spaceship.cpp Stars.cpp Shoot.cpp
+you compile like this g++ -g -l ncuresers Spaceship
 move up w
 move down s
 move left a
