@@ -1,6 +1,4 @@
-#include "Print_shoot.h"
 #include "Print_star.h"
-#include "Remove_old_shoot.h"
 #include "Remove_star.h"
 #include <cstdlib>
 #include <limits.h>
@@ -10,12 +8,23 @@
 #include <unordered_map>
 #include <vector>
 using namespace std;
+int myRand(int fromA, int toB) {
+  if (fromA > toB)
+    return myRand(toB, fromA);
+  int d = toB - fromA;
+  int r = rand() % (d + 1);
+  return r + fromA;
+}
 struct bullet {
   int y;
   int x;
   int tick;
   int check;
-  bullet *next;
+};
+struct star {
+  int y = 0;
+  int x = 0;
+  star *next = 0;
 };
 vector<string> spaceship{"           \\\\\\_____", "        ###[==_____>",
                          "           ///     "};
@@ -49,6 +58,7 @@ void move_space_ship(int &x, int &y, int key) {
       Y++;
       move(Y, x);
     }
+    return;
   }
   if (key == 119) {
     remove_space_ship(x, y);
@@ -61,6 +71,7 @@ void move_space_ship(int &x, int &y, int key) {
       Y++;
       move(Y, x);
     }
+    return;
   }
   if (key == 100) {
     remove_space_ship(x, y);
@@ -73,6 +84,7 @@ void move_space_ship(int &x, int &y, int key) {
       Y++;
       move(Y, x);
     }
+    return;
   }
   if (key == 97) {
     remove_space_ship(x, y);
@@ -85,6 +97,7 @@ void move_space_ship(int &x, int &y, int key) {
       Y++;
       move(Y, x);
     }
+    return;
   }
 }
 void print_main_menu() {
@@ -126,63 +139,81 @@ void print_helth_bar() {
   move(5, 0);
   printw("    *");
 }
-bullet *create_memory() {
+bullet *create_memory_for_bullet() {
   bullet *ptr = (bullet *)malloc(sizeof(bullet));
   return ptr;
 }
+star *create_memory_for_star(int y, int x) {
+  star *ptr = (star *)malloc(sizeof(bullet));
+  ptr->y = y;
+  ptr->x = x;
+  return ptr;
+}
+void shoot(bullet *ptr, int getch, int y, int x) {
+  if (ptr->tick == 199) {
+    ptr->check = 0;
+  }
+  if (ptr->check == 0 && getch == 32) {
+    ptr->y = y + 1;
+    ptr->x = x + 21;
+    ptr->tick = 0;
+    ptr->check = 1;
+  }
+  if (ptr->check == 1) {
+    ptr->tick++;
+    move(ptr->y, ptr->x);
+    if (ptr->tick != 198) {
+      printw("-");
+    }
+    move(ptr->y, ptr->x - 1);
+    printw(" ");
+  }
+  ptr->x++;
+}
+
 int main() {
   initscr();
-  start_color();
   print_main_menu();
-  bullet *ptr = create_memory();
-  ptr->check = 0;
+  star *star_ptr = create_memory_for_star(myRand(5, 50), myRand(20, 200));
+  star *sec_star_ptr = star_ptr;
+  for (int i = 0; i < 10; i++) {
+    star_ptr->next = create_memory_for_star(myRand(5, 50), myRand(20, 200));
+    star_ptr = star_ptr->next;
+  }
+  star_ptr = sec_star_ptr;
+  bullet *bullet_ptr = create_memory_for_bullet();
+  bullet_ptr->check = 0;
   int count = 0;
   auto x = 0;
   auto y = 0;
   int x_star = 99;
   int y_star = 5;
   int check_two = 0;
-  int helth_bar_lives = 3;
   move(y, x);
   for (int i = 0; i < spaceship.size(); i++) {
     printw("%s\n", spaceship[i].c_str());
   }
   nodelay(stdscr, true);
   for (;;) {
-    if (x_star > -1) {
-      usleep(29999);
-      x_star--;
-      remove_star(x_star + 1, y_star);
-      if (x_star != -1) {
-        print_star(x_star, y_star);
+    if (sec_star_ptr->x > -1) {
+      sec_star_ptr->x--;
+      remove_star(sec_star_ptr->x + 1, sec_star_ptr->y);
+      if (sec_star_ptr->x != -1) {
+        print_star(sec_star_ptr->x, sec_star_ptr->y);
       }
+    } else {
+      sec_star_ptr->x = myRand(20, 200);
+    }
+    if(sec_star_ptr->next != NULL){
+      sec_star_ptr = sec_star_ptr->next;
+    } else {
+      sec_star_ptr = star_ptr;
     }
     move(0, 0);
     int b = getch();
-    if (ptr->tick == 199) {
-      ptr->tick = 0;
-      ptr->check = 0;
-    }
     // making it shoot
-    if (b == 32 && ptr->check == 0) {
-      ptr->y = y + 1;
-      ptr->x = x + 21;
-      ptr->tick = 0;
-      ptr->check = 1;
-    }
-    if (ptr->check == 1) {
-      if (x_star < 0) {
-        usleep(19999);
-      }
-      if (ptr->tick != 198) {
-        move(ptr->y, ptr->x);
-      }
-      printw("-");
-      move(ptr->y, ptr->x - 1);
-      printw(" ");
-      ptr->x++;
-      ptr->tick++;
-    }
+    usleep(4999);
+    shoot(bullet_ptr, b, y, x);
     // end making it shoot
     if (b == 27) {
       clear();
