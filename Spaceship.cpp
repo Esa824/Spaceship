@@ -56,7 +56,6 @@ void move_space_ship(int &x, int &y, int key) {
       Y++;
       move(Y, x);
     }
-    return;
   }
   if (key == 119) {
     remove_space_ship(x, y);
@@ -69,7 +68,6 @@ void move_space_ship(int &x, int &y, int key) {
       Y++;
       move(Y, x);
     }
-    return;
   }
   if (key == 100) {
     remove_space_ship(x, y);
@@ -82,7 +80,6 @@ void move_space_ship(int &x, int &y, int key) {
       Y++;
       move(Y, x);
     }
-    return;
   }
   if (key == 97) {
     remove_space_ship(x, y);
@@ -95,7 +92,6 @@ void move_space_ship(int &x, int &y, int key) {
       Y++;
       move(Y, x);
     }
-    return;
   }
 }
 void print_main_menu() {
