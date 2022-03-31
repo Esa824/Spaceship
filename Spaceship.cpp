@@ -18,11 +18,12 @@ struct bullet {
   int x;
   int tick;
   int check;
+  bullet *next;
 };
 struct star {
   int y = 0;
   int x = 0;
-  star *next = 0;
+  star *next;
 };
 vector<string> spaceship{"           \\\\\\_____", "        ###[==_____>",
                          "           ///     "};
@@ -115,7 +116,10 @@ void print_main_menu() {
   move(15, 84);
   printw("|______|");
   move(14, 88);
-  while (getch() != 10) {
+  int a = 0;
+  while (a != 10) {
+    move(0, 0);
+    a = getch();
   }
   clear();
 }
@@ -133,8 +137,11 @@ void print_helth_bar() {
   move(5, 0);
   printw("    *");
 }
-bullet *create_memory_for_bullet() {
+bullet *create_memory_for_bullet(int x, int y, int check) {
   bullet *ptr = (bullet *)malloc(sizeof(bullet));
+  ptr->x = x;
+  ptr->y = y;
+  ptr->check = check;
   return ptr;
 }
 star *create_memory_for_star(int y, int x) {
@@ -143,43 +150,39 @@ star *create_memory_for_star(int y, int x) {
   ptr->x = x;
   return ptr;
 }
-void shoot(bullet *ptr, int getch, int y, int x) {
-  if (ptr->tick == 199) {
-    ptr->check = 0;
-  }
-  if (ptr->check == 0 && getch == 32) {
-    ptr->y = y + 1;
-    ptr->x = x + 21;
-    ptr->tick = 0;
-    ptr->check = 1;
-  }
-  if (ptr->check == 1) {
-    ptr->tick++;
-    move(ptr->y, ptr->x);
-    if (ptr->tick != 198) {
+void shoot(bullet *sec_bullet_ptr) {
+  if (sec_bullet_ptr->tick < 182) {
+    sec_bullet_ptr->tick++;
+    move(sec_bullet_ptr->y, sec_bullet_ptr->x);
+    if (sec_bullet_ptr->tick != 181) {
       printw("-");
     }
-    move(ptr->y, ptr->x - 1);
+    move(sec_bullet_ptr->y, sec_bullet_ptr->x - 1);
     printw(" ");
+    sec_bullet_ptr->x++;
+  } else {
+    sec_bullet_ptr->check = 0;
   }
-  ptr->x++;
 }
 
 int main() {
   initscr();
+  noecho();
   print_main_menu();
-  star *star_ptr = create_memory_for_star(myRand(5, 50), myRand(20, 200));
+  star *star_ptr = create_memory_for_star(myRand(5, 40), myRand(20, 200));
   star *sec_star_ptr = star_ptr;
-  for (int i = 0; i < 10; i++) {
-    star_ptr->next = create_memory_for_star(myRand(5, 50), myRand(20, 200));
+  for (int i = 0; i < 5; i++) {
+    star_ptr->next = create_memory_for_star(myRand(5, 40), myRand(20, 200));
     star_ptr = star_ptr->next;
   }
   star_ptr = sec_star_ptr;
-  bullet *bullet_ptr = create_memory_for_bullet();
-  bullet_ptr->check = 0;
-  int count = 0;
   auto x = 0;
   auto y = 0;
+  bullet *bullet_ptr = create_memory_for_bullet(0, 0, 0);
+  bullet *sec_bullet_ptr = bullet_ptr;
+  bullet *third_bullet_ptr = bullet_ptr;
+  int number_of_bullets_are = 0;
+  int count = 0;
   int x_star = 99;
   int y_star = 5;
   int check_two = 0;
@@ -208,7 +211,26 @@ int main() {
     move(0, 0);
     int b = getch();
     usleep(4999);
-    shoot(bullet_ptr, b, y, x);
+    if (b == 32 && !sec_bullet_ptr->check) {
+      sec_bullet_ptr->check = 1;
+      sec_bullet_ptr->tick = 0;
+      sec_bullet_ptr->y = y + 1;
+      sec_bullet_ptr->x = x + 21;
+      continue;
+    }
+    if (sec_bullet_ptr->check == 1 && b == 32 && number_of_bullets_are < 10) {
+      third_bullet_ptr->next = create_memory_for_bullet(x + 21, y + 1, 1);
+      third_bullet_ptr = third_bullet_ptr->next;
+      number_of_bullets_are++;
+    }
+    if (sec_bullet_ptr->check == 1) {
+      shoot(sec_bullet_ptr);
+    }
+    if (sec_bullet_ptr->next != NULL) {
+      sec_bullet_ptr = sec_bullet_ptr->next;
+    } else {
+      sec_bullet_ptr = bullet_ptr;
+    }
     move_space_ship(x, y, b);
   }
 }
