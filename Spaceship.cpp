@@ -185,7 +185,6 @@ int main() {
   int count = 0;
   int x_star = 99;
   int y_star = 5;
-  int check_two = 0;
   move(y, x);
   for (int i = 0; i < spaceship.size(); i++) {
     printw("%s\n", spaceship[i].c_str());
