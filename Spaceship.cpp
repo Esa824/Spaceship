@@ -37,9 +37,11 @@ struct star {
 };
 vector<string> spaceship{"           \\\\\\_____", "        ###[==_____>",
                          "           ///     "};
-vector<string> number_of_spaces_for_spaceship{"        ", "            ", "   "};
+vector<string> number_of_spaces_for_spaceship{"        ", "            ",
+                                              "   "};
 vector<string> enemy{"  \\____/", "<_/__~0_\\", "(/_______\\)"};
-vector<string> number_of_spaces_for_alien_spaceship{"      ", "          ", "           "};
+vector<string> number_of_spaces_for_alien_spaceship{"      ", "          ",
+                                                    "           "};
 void remove_space_ship(int &x, int &y) {
   int Y = y;
   int X = x;
@@ -57,8 +59,7 @@ void remove_space_ship(int &x, int &y) {
   }
   move(y, x);
 }
-void remove_alien_spaceship(int x){
-}
+void remove_alien_spaceship(int x) {}
 void move_space_ship(int &x, int &y, int key) {
   if (key == 115) {
     remove_space_ship(x, y);
@@ -109,9 +110,8 @@ void move_space_ship(int &x, int &y, int key) {
     }
   }
 }
-void move_aline_space_ship(int y, int x, int getch){
-  if(getch == KEY_UP){
-    
+void move_aline_space_ship(int y, int x, int getch) {
+  if (getch == KEY_UP) {
   }
 }
 void print_main_menu() {
@@ -130,7 +130,7 @@ void print_main_menu() {
   printw("________");
   move(13, 84);
   printw("|      |");
-  move(14, 84); 
+  move(14, 84);
   printw("| play |");
   move(15, 84);
   printw("|______|");
@@ -185,9 +185,17 @@ void shoot(bullet *sec_bullet_ptr) {
 }
 
 int main(int argc, char **argv) {
+  ma_result result;
+  ma_engine engine;
+  result = ma_engine_init(NULL, &engine);
+  if (result != MA_SUCCESS) {
+    printf("Failed to initialize audio engine.");
+    return -1;
+  }
+  ma_engine_play_sound(&engine, argv[1], NULL);
   initscr();
   noecho();
-  keypad(stdscr,true);
+  keypad(stdscr, true);
   print_main_menu();
   star *star_ptr = create_memory_for_star(myRand(5, 40), myRand(20, 200));
   star *sec_star_ptr = star_ptr;
