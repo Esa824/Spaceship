@@ -209,12 +209,6 @@ int main(int argc, char **argv) {
   auto y_enemy = myRand(5, 50);
   auto x_enemy = myRand(100, 200);
   move(y_enemy, x_enemy);
-  int Y = y_enemy;
-  for (int i = 0; i < enemy.size(); i++) {
-    printw("%s\n", enemy[i].c_str());
-    Y++;
-    move(Y, x_enemy);
-  }
   bullet *bullet_ptr = create_memory_for_bullet(0, 0, 0);
   bullet *sec_bullet_ptr = bullet_ptr;
   bullet *third_bullet_ptr = bullet_ptr;
