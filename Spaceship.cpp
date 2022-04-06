@@ -2,6 +2,7 @@
 #include "miniaudio/miniaudio.h"
 #include <cstdlib>
 #include <limits.h>
+#include <locale.h>
 #include <ncurses.h>
 #include <stdio.h>
 #include <string>
@@ -23,12 +24,10 @@ struct bullet {
   int check;
   bullet *next;
 };
-struct enemy_bullet {
+struct astroid {
   int y;
   int x;
-  int tick;
-  int check;
-  bullet *next;
+  astroid *next;
 };
 struct star {
   int y = 0;
@@ -59,7 +58,11 @@ void remove_space_ship(int &x, int &y) {
   }
   move(y, x);
 }
-void remove_alien_spaceship(int x) {}
+void remove_alien_spaceship(int &x, int &y) {
+  for (int i = 0; i < number_of_spaces_for_alien_spaceship.size(); i++) {
+    printw("%s\n", number_of_spaces_for_spaceship[i].c_str());
+  }
+}
 void move_space_ship(int &x, int &y, int key) {
   if (key == 115) {
     remove_space_ship(x, y);
@@ -110,8 +113,50 @@ void move_space_ship(int &x, int &y, int key) {
     }
   }
 }
-void move_aline_space_ship(int y, int x, int getch) {
+void move_aline_space_ship(int &y, int &x, int getch) {
   if (getch == KEY_UP) {
+    remove_alien_spaceship(y, x);
+    y--;
+    move(y, x);
+    int Y = y;
+    for (auto i = 0; i < enemy.size(); i++) {
+      printw("%s\n", enemy[i].c_str());
+      Y++;
+      move(Y, x);
+    }
+  }
+  if (getch == KEY_DOWN) {
+    remove_alien_spaceship(y, x);
+    y++;
+    move(y, x);
+    int Y = y;
+    for (auto i = 0; i < enemy.size(); i++) {
+      printw("%s\n", enemy[i].c_str());
+      Y++;
+      move(Y, x);
+    }
+  }
+  if (getch == KEY_LEFT) {
+    remove_alien_spaceship(y, x);
+    x--;
+    move(y, x);
+    int Y = y;
+    for (auto i = 0; i < enemy.size(); i++) {
+      printw("%s\n", enemy[i].c_str());
+      Y++;
+      move(Y, x);
+    }
+  }
+  if (getch == KEY_RIGHT) {
+    remove_alien_spaceship(y, x);
+    x++;
+    move(y, x);
+    int Y = y;
+    for (auto i = 0; i < enemy.size(); i++) {
+      printw("%s\n", enemy[i].c_str());
+      Y++;
+      move(Y, x);
+    }
   }
 }
 void print_main_menu() {
@@ -169,11 +214,17 @@ star *create_memory_for_star(int y, int x) {
   ptr->x = x;
   return ptr;
 }
+astroid *create_memory_for_astroid(int y, int x) {
+  astroid *ptr = (astroid *)malloc(sizeof(astroid));
+  ptr->y = y;
+  ptr->y = x;
+  return ptr;
+}
 void shoot(bullet *sec_bullet_ptr) {
-  if (sec_bullet_ptr->tick < 182) {
+  if (sec_bullet_ptr->tick != 199) {
     sec_bullet_ptr->tick++;
     move(sec_bullet_ptr->y, sec_bullet_ptr->x);
-    if (sec_bullet_ptr->tick != 181) {
+    if (sec_bullet_ptr->tick != 198) {
       printw("-");
     }
     move(sec_bullet_ptr->y, sec_bullet_ptr->x - 1);
@@ -193,25 +244,31 @@ int main(int argc, char **argv) {
     return -1;
   }
   ma_engine_play_sound(&engine, argv[1], NULL);
+  setlocale(LC_ALL, "");
   initscr();
+  curs_set(false);
   noecho();
-  keypad(stdscr, true);
   print_main_menu();
+  keypad(stdscr, true);
   star *star_ptr = create_memory_for_star(myRand(5, 40), myRand(20, 200));
   star *sec_star_ptr = star_ptr;
+  astroid *astroid_ptr =
+      create_memory_for_astroid(myRand(5, 50), myRand(50, 200));
+  astroid *sec_astroid_ptr = astroid_ptr;
   for (int i = 0; i < 5; i++) {
     star_ptr->next = create_memory_for_star(myRand(5, 40), myRand(20, 200));
     star_ptr = star_ptr->next;
+    sec_astroid_ptr->next =
+        create_memory_for_astroid(myRand(5, 50), myRand(50, 200));
+    sec_astroid_ptr = sec_astroid_ptr->next;
   }
+  sec_astroid_ptr = astroid_ptr;
   star_ptr = sec_star_ptr;
   auto x = 0;
   auto y = 0;
-  auto y_enemy = myRand(5, 50);
-  auto x_enemy = myRand(100, 200);
-  move(y_enemy, x_enemy);
-  bullet *bullet_ptr = create_memory_for_bullet(0, 0, 0);
-  bullet *sec_bullet_ptr = bullet_ptr;
-  bullet *third_bullet_ptr = bullet_ptr;
+  bullet *bullet_ptr_for_spaceship = create_memory_for_bullet(0, 0, 0);
+  bullet *sec_bullet_ptr_for_spaceship = bullet_ptr_for_spaceship;
+  bullet *third_bullet_ptr_for_spaceship = bullet_ptr_for_spaceship;
   int number_of_bullets_are = 0;
   int count = 0;
   int x_star = 99;
@@ -238,29 +295,51 @@ int main(int argc, char **argv) {
     } else {
       sec_star_ptr = star_ptr;
     }
+    if (sec_astroid_ptr->x > -1) {
+      sec_astroid_ptr->x--;
+      move(sec_astroid_ptr->y,sec_astroid_ptr->y + 1);
+      printw(" ");
+      if (sec_astroid_ptr->x != -1) {
+        move(sec_astroid_ptr->y,sec_astroid_ptr->x);
+      }
+
+    } else {
+      sec_astroid_ptr->x = myRand(50, 200);
+    }
+    if (sec_astroid_ptr->next != NULL) {
+      sec_astroid_ptr = sec_astroid_ptr->next;
+    } else {
+      sec_astroid_ptr = astroid_ptr;
+    }
     move(0, 0);
     int b = getch();
+    int c = getch();
     usleep(4999);
-    if (b == 32 && !sec_bullet_ptr->check) {
-      sec_bullet_ptr->check = 1;
-      sec_bullet_ptr->tick = 0;
-      sec_bullet_ptr->y = y + 1;
-      sec_bullet_ptr->x = x + 21;
+    // bullet shoot
+    if (b == 32 && !sec_bullet_ptr_for_spaceship->check) {
+      sec_bullet_ptr_for_spaceship->check = 1;
+      sec_bullet_ptr_for_spaceship->tick = 0;
+      sec_bullet_ptr_for_spaceship->y = y + 1;
+      sec_bullet_ptr_for_spaceship->x = x + 21;
       continue;
     }
-    if (sec_bullet_ptr->check == 1 && b == 32 && number_of_bullets_are < 10) {
-      third_bullet_ptr->next = create_memory_for_bullet(x + 21, y + 1, 1);
-      third_bullet_ptr = third_bullet_ptr->next;
+    if (sec_bullet_ptr_for_spaceship->check == 1 && b == 32 && 
+        number_of_bullets_are < 5) {
+      third_bullet_ptr_for_spaceship->next =
+          create_memory_for_bullet(x + 21, y + 1, 1);
+      third_bullet_ptr_for_spaceship = third_bullet_ptr_for_spaceship->next;
       number_of_bullets_are++;
     }
-    if (sec_bullet_ptr->check == 1) {
-      shoot(sec_bullet_ptr);
+    if (sec_bullet_ptr_for_spaceship->check == 1) {
+      shoot(sec_bullet_ptr_for_spaceship);
     }
-    if (sec_bullet_ptr->next != NULL) {
-      sec_bullet_ptr = sec_bullet_ptr->next;
+    if (sec_bullet_ptr_for_spaceship->next != NULL) {
+      sec_bullet_ptr_for_spaceship = sec_bullet_ptr_for_spaceship->next;
     } else {
-      sec_bullet_ptr = bullet_ptr;
+      sec_bullet_ptr_for_spaceship = bullet_ptr_for_spaceship;
     }
+    // enemy shoot
     move_space_ship(x, y, b);
+    move_aline_space_ship(x, y, c);
   }
 }
