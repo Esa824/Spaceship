@@ -24,10 +24,12 @@ struct bullet {
   int check;
   bullet *next;
 };
-struct astroid {
+struct enemy {
   int y;
   int x;
-  astroid *next;
+  int tick;
+  int check;
+  enemy *next;
 };
 struct star {
   int y = 0;
@@ -214,13 +216,8 @@ star *create_memory_for_star(int y, int x) {
   ptr->x = x;
   return ptr;
 }
-astroid *create_memory_for_astroid(int y, int x) {
-  astroid *ptr = (astroid *)malloc(sizeof(astroid));
-  ptr->y = y;
-  ptr->y = x;
-  return ptr;
-}
-void shoot(bullet *sec_bullet_ptr) {
+
+void main_shoot(bullet *sec_bullet_ptr) {
   if (sec_bullet_ptr->tick != 199) {
     sec_bullet_ptr->tick++;
     move(sec_bullet_ptr->y, sec_bullet_ptr->x);
@@ -252,17 +249,10 @@ int main(int argc, char **argv) {
   keypad(stdscr, true);
   star *star_ptr = create_memory_for_star(myRand(5, 40), myRand(20, 200));
   star *sec_star_ptr = star_ptr;
-  astroid *astroid_ptr =
-      create_memory_for_astroid(myRand(5, 50), myRand(50, 200));
-  astroid *sec_astroid_ptr = astroid_ptr;
   for (int i = 0; i < 5; i++) {
     star_ptr->next = create_memory_for_star(myRand(5, 40), myRand(20, 200));
     star_ptr = star_ptr->next;
-    sec_astroid_ptr->next =
-        create_memory_for_astroid(myRand(5, 50), myRand(50, 200));
-    sec_astroid_ptr = sec_astroid_ptr->next;
   }
-  sec_astroid_ptr = astroid_ptr;
   star_ptr = sec_star_ptr;
   auto x = 0;
   auto y = 0;
@@ -295,22 +285,6 @@ int main(int argc, char **argv) {
     } else {
       sec_star_ptr = star_ptr;
     }
-    if (sec_astroid_ptr->x > -1) {
-      sec_astroid_ptr->x--;
-      move(sec_astroid_ptr->y,sec_astroid_ptr->y + 1);
-      printw(" ");
-      if (sec_astroid_ptr->x != -1) {
-        move(sec_astroid_ptr->y,sec_astroid_ptr->x);
-      }
-
-    } else {
-      sec_astroid_ptr->x = myRand(50, 200);
-    }
-    if (sec_astroid_ptr->next != NULL) {
-      sec_astroid_ptr = sec_astroid_ptr->next;
-    } else {
-      sec_astroid_ptr = astroid_ptr;
-    }
     move(0, 0);
     int b = getch();
     int c = getch();
@@ -323,7 +297,7 @@ int main(int argc, char **argv) {
       sec_bullet_ptr_for_spaceship->x = x + 21;
       continue;
     }
-    if (sec_bullet_ptr_for_spaceship->check == 1 && b == 32 && 
+    if (sec_bullet_ptr_for_spaceship->check == 1 && b == 32 &&
         number_of_bullets_are < 5) {
       third_bullet_ptr_for_spaceship->next =
           create_memory_for_bullet(x + 21, y + 1, 1);
@@ -331,7 +305,7 @@ int main(int argc, char **argv) {
       number_of_bullets_are++;
     }
     if (sec_bullet_ptr_for_spaceship->check == 1) {
-      shoot(sec_bullet_ptr_for_spaceship);
+      main_shoot(sec_bullet_ptr_for_spaceship);
     }
     if (sec_bullet_ptr_for_spaceship->next != NULL) {
       sec_bullet_ptr_for_spaceship = sec_bullet_ptr_for_spaceship->next;
