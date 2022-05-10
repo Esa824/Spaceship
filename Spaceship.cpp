@@ -40,7 +40,7 @@ vector<string> spaceship{"           \\\\\\_____", "        ###[==_____>",
                          "           ///     "};
 vector<string> number_of_spaces_for_spaceship{"        ", "            ",
                                               "   "};
-vector<string> enemy{"  \\____/", "<_/__~0_\\", "(/_______\\)"};
+vector<string> enemy{"\\____/", "<_/__~0_\\", "(/_______\\)"};
 vector<string> number_of_spaces_for_alien_spaceship{"      ", "          ",
                                                     "           "};
 void remove_space_ship(int &x, int &y) {
@@ -49,20 +49,31 @@ void remove_space_ship(int &x, int &y) {
   move(Y, X);
   for (int i = 0; i < number_of_spaces_for_spaceship.size(); i++) {
     if (i == 1) {
-      X -= 3;
+      X -= 1;
     }
     if (i == 2) {
-      X += 3;
+      X -= 1;
     }
-    printw("%s\n", number_of_spaces_for_spaceship[0].c_str());
+    printw("%s\n", number_of_spaces_for_spaceship[i].c_str());
     Y++;
     move(Y, X);
   }
   move(y, x);
 }
 void remove_alien_spaceship(int &x, int &y) {
+  int Y = y;
+  int X = x;
+  move(Y, X);
   for (int i = 0; i < number_of_spaces_for_alien_spaceship.size(); i++) {
-    printw("%s\n", number_of_spaces_for_spaceship[i].c_str());
+    if (i == 1) {
+      X -= 1;
+    }
+    if (i == 2) {
+      X -= 1;
+    }
+    printw("%s\n", number_of_spaces_for_alien_spaceship[i].c_str());
+    Y++;
+    move(Y, X);
   }
 }
 void move_space_ship(int &x, int &y, int key) {
@@ -233,6 +244,7 @@ void main_shoot(bullet *sec_bullet_ptr) {
 }
 
 int main(int argc, char **argv) {
+  int conut = 1;
   ma_result result;
   ma_engine engine;
   result = ma_engine_init(NULL, &engine);
@@ -256,6 +268,8 @@ int main(int argc, char **argv) {
   star_ptr = sec_star_ptr;
   auto x = 0;
   auto y = 0;
+  auto x_alien = 50;
+  auto y_alien = 5;
   bullet *bullet_ptr_for_spaceship = create_memory_for_bullet(0, 0, 0);
   bullet *sec_bullet_ptr_for_spaceship = bullet_ptr_for_spaceship;
   bullet *third_bullet_ptr_for_spaceship = bullet_ptr_for_spaceship;
@@ -287,9 +301,8 @@ int main(int argc, char **argv) {
     }
     move(0, 0);
     int b = getch();
-    int c = getch();
     usleep(4999);
-    // bullet shoot
+    // spaceship shoot
     if (b == 32 && !sec_bullet_ptr_for_spaceship->check) {
       sec_bullet_ptr_for_spaceship->check = 1;
       sec_bullet_ptr_for_spaceship->tick = 0;
@@ -312,8 +325,14 @@ int main(int argc, char **argv) {
     } else {
       sec_bullet_ptr_for_spaceship = bullet_ptr_for_spaceship;
     }
+    // end spaceship shoot
     // enemy shoot
+
+    // end enemy shoot
     move_space_ship(x, y, b);
-    move_aline_space_ship(x, y, c);
+    if (conut % 200 == 0) {
+      move_aline_space_ship(y_alien, x_alien, KEY_LEFT);
+    }
+    conut++;
   }
 }
