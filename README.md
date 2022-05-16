@@ -1,7 +1,4 @@
 # Spaceship
- this is how you compile g++ -g -l ncuresers Spaceship
-# controls
-# left : a
-# right : d
-# up : w
-# down : s
+this is how you compile g++ -g -l ncuresers Spaceship
+controls is WASD
+here is a video [https://asciinema.org/a/vBBpDQa07kISIBPelGa35FQeP] [https://asciinema.org/a/vBBpDQa07kISIBPelGa35FQeP]

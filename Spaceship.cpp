@@ -25,10 +25,10 @@ struct bullet {
   bullet *next;
 };
 struct enemy {
-  int y;
   int x;
-  int tick;
+  int y;
   int check;
+  int tick;
   enemy *next;
 };
 struct star {
@@ -40,7 +40,7 @@ vector<string> spaceship{"           \\\\\\_____", "        ###[==_____>",
                          "           ///     "};
 vector<string> number_of_spaces_for_spaceship{"        ", "            ",
                                               "   "};
-vector<string> enemy{"\\____/", "<_/__~0_\\", "(/_______\\)"};
+vector<string> enemy_spaceship{"\\____/", "<_/__~0_\\", "(/_______\\)"};
 vector<string> number_of_spaces_for_alien_spaceship{"      ", "          ",
                                                     "           "};
 void remove_space_ship(int &x, int &y) {
@@ -65,12 +65,6 @@ void remove_alien_spaceship(int &x, int &y) {
   int X = x;
   move(Y, X);
   for (int i = 0; i < number_of_spaces_for_alien_spaceship.size(); i++) {
-    if (i == 1) {
-      X -= 1;
-    }
-    if (i == 2) {
-      X -= 1;
-    }
     printw("%s\n", number_of_spaces_for_alien_spaceship[i].c_str());
     Y++;
     move(Y, X);
@@ -132,8 +126,8 @@ void move_aline_space_ship(int &y, int &x, int getch) {
     y--;
     move(y, x);
     int Y = y;
-    for (auto i = 0; i < enemy.size(); i++) {
-      printw("%s\n", enemy[i].c_str());
+    for (auto i = 0; i < enemy_spaceship.size(); i++) {
+      printw("%s\n", enemy_spaceship[i].c_str());
       Y++;
       move(Y, x);
     }
@@ -143,8 +137,8 @@ void move_aline_space_ship(int &y, int &x, int getch) {
     y++;
     move(y, x);
     int Y = y;
-    for (auto i = 0; i < enemy.size(); i++) {
-      printw("%s\n", enemy[i].c_str());
+    for (auto i = 0; i < enemy_spaceship.size(); i++) {
+      printw("%s\n", enemy_spaceship[i].c_str());
       Y++;
       move(Y, x);
     }
@@ -154,8 +148,8 @@ void move_aline_space_ship(int &y, int &x, int getch) {
     x--;
     move(y, x);
     int Y = y;
-    for (auto i = 0; i < enemy.size(); i++) {
-      printw("%s\n", enemy[i].c_str());
+    for (auto i = 0; i < enemy_spaceship.size(); i++) {
+      printw("%s\n", enemy_spaceship[i].c_str());
       Y++;
       move(Y, x);
     }
@@ -165,8 +159,8 @@ void move_aline_space_ship(int &y, int &x, int getch) {
     x++;
     move(y, x);
     int Y = y;
-    for (auto i = 0; i < enemy.size(); i++) {
-      printw("%s\n", enemy[i].c_str());
+    for (auto i = 0; i < enemy_spaceship.size(); i++) {
+      printw("%s\n", enemy_spaceship[i].c_str());
       Y++;
       move(Y, x);
     }
@@ -227,12 +221,17 @@ star *create_memory_for_star(int y, int x) {
   ptr->x = x;
   return ptr;
 }
-
+enemy *create_memory_for_enemy(int y, int x) {
+  enemy *ptr = (enemy *)malloc(sizeof(enemy));
+  ptr->y = y;
+  ptr->x = x;
+  return ptr;
+}
 void main_shoot(bullet *sec_bullet_ptr) {
-  if (sec_bullet_ptr->tick != 199) {
+  if (sec_bullet_ptr->tick != 121) {
     sec_bullet_ptr->tick++;
     move(sec_bullet_ptr->y, sec_bullet_ptr->x);
-    if (sec_bullet_ptr->tick != 198) {
+    if (sec_bullet_ptr->tick != 120) {
       printw("-");
     }
     move(sec_bullet_ptr->y, sec_bullet_ptr->x - 1);
@@ -261,15 +260,25 @@ int main(int argc, char **argv) {
   keypad(stdscr, true);
   star *star_ptr = create_memory_for_star(myRand(5, 40), myRand(20, 200));
   star *sec_star_ptr = star_ptr;
+  //
+  enemy *enemys = create_memory_for_enemy(myRand(6, 10), myRand(30, 80));
+  enemy *enemys2 = enemys;
   for (int i = 0; i < 5; i++) {
     star_ptr->next = create_memory_for_star(myRand(5, 40), myRand(20, 200));
     star_ptr = star_ptr->next;
   }
+  for (int i = 0; i < 0; i++) {
+    enemys2->next = create_memory_for_enemy(myRand(1, 10), myRand(20, 200));
+    enemys2 = enemys2->next;
+  }
+  enemys2 = enemys;
   star_ptr = sec_star_ptr;
   auto x = 0;
   auto y = 0;
-  auto x_alien = 50;
+  auto x_alien = 90;
   auto y_alien = 5;
+  int x_shoot_for_alien_spaceship = x_alien;
+  int check = 0;
   bullet *bullet_ptr_for_spaceship = create_memory_for_bullet(0, 0, 0);
   bullet *sec_bullet_ptr_for_spaceship = bullet_ptr_for_spaceship;
   bullet *third_bullet_ptr_for_spaceship = bullet_ptr_for_spaceship;
@@ -289,7 +298,7 @@ int main(int argc, char **argv) {
       printw(" ");
       if (sec_star_ptr->x != -1) {
         move(sec_star_ptr->y, sec_star_ptr->x);
-        printw(".");
+        printw("٭");
       }
     } else {
       sec_star_ptr->x = myRand(20, 200);
@@ -327,12 +336,33 @@ int main(int argc, char **argv) {
     }
     // end spaceship shoot
     // enemy shoot
-
+    if (!enemys2->check && enemys2->x > 0 && 1 > 2) {
+      enemys2->check = 1;
+      enemys2->tick = enemys2->x;
+    } else if (enemys2->x > 0) {
+      if (enemys2->y > y && enemys2->y < y + 3 && enemys2->x == x) {
+        return 0;
+      }
+      move(enemys2->y, enemys2->tick);
+      printw("-");
+      move(enemys2->y, enemys2->tick + 1);
+      printw(" ");
+      enemys2->tick--;
+      if (enemys2->tick < 0) {
+        enemys2->check = 0;
+      }
+    }
     // end enemy shoot
     move_space_ship(x, y, b);
-    if (conut % 200 == 0) {
-      move_aline_space_ship(y_alien, x_alien, KEY_LEFT);
+    if (enemys2->x > 0 && 1 > 2) {
+      move_aline_space_ship(enemys2->y, enemys2->x, KEY_LEFT);
+    } else if (!enemys2->x) {
+      remove_alien_spaceship(enemys2->x, enemys2->y);
     }
-    conut++;
+    if (enemys2->next != NULL) {
+      enemys2 = enemys2->next;
+    } else {
+      enemys2 = enemys;
+    }
   }
 }
