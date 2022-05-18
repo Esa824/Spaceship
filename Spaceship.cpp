@@ -179,15 +179,40 @@ void print_main_menu() {
   move(10, 70);
   printw("000000  0        0    0  000000  000000");
   move(12, 84);
-  printw("________");
+  printw(" ________");
   move(13, 84);
-  printw("|      |");
+  printw("|        |");
   move(14, 84);
-  printw("| play |");
+  printw("| levels |");
   move(15, 84);
-  printw("|______|");
+  printw("|________|");
   move(14, 88);
   int a = 0;
+  while (a != 10) {
+    move(0, 0);
+    a = getch();
+  }
+  a = 0;
+  clear();
+  move(2, 4);
+  printw("-----");
+  move(3, 4);
+  printw("| 1 |");
+  move(4, 4);
+  printw("-----");
+  move(2, 12);
+  printw("-----");
+  move(3, 12);
+  printw("| 2 |");
+  move(4, 12);
+  printw("-----");
+  move(2, 20);
+  printw("-----");
+  move(3, 20);
+  printw("| 3 |");
+  move(4, 20);
+  printw("-----");
+
   while (a != 10) {
     move(0, 0);
     a = getch();
@@ -243,6 +268,7 @@ void main_shoot(bullet *sec_bullet_ptr) {
 }
 
 int main(int argc, char **argv) {
+  int health_bar = 3;
   int conut = 1;
   ma_result result;
   ma_engine engine;
@@ -258,7 +284,7 @@ int main(int argc, char **argv) {
   noecho();
   print_main_menu();
   keypad(stdscr, true);
-  star *star_ptr = create_memory_for_star(myRand(5, 40), myRand(20, 200));
+  star *star_ptr = create_memory_for_star(myRand(1, 10), myRand(100, 200));
   star *sec_star_ptr = star_ptr;
   //
   enemy *enemys = create_memory_for_enemy(myRand(6, 10), myRand(30, 80));
@@ -267,8 +293,8 @@ int main(int argc, char **argv) {
     star_ptr->next = create_memory_for_star(myRand(5, 40), myRand(20, 200));
     star_ptr = star_ptr->next;
   }
-  for (int i = 0; i < 0; i++) {
-    enemys2->next = create_memory_for_enemy(myRand(1, 10), myRand(20, 200));
+  for (int i = 0; i < 1; i++) {
+    enemys2->next = create_memory_for_enemy(myRand(1, 10), myRand(100, 200));
     enemys2 = enemys2->next;
   }
   enemys2 = enemys;
@@ -292,6 +318,9 @@ int main(int argc, char **argv) {
   }
   nodelay(stdscr, true);
   for (;;) {
+    if (!health_bar) {
+      return 0;
+    }
     if (sec_star_ptr->x > -1) {
       sec_star_ptr->x--;
       move(sec_star_ptr->y, sec_star_ptr->x + 1);
@@ -336,12 +365,23 @@ int main(int argc, char **argv) {
     }
     // end spaceship shoot
     // enemy shoot
-    if (!enemys2->check && enemys2->x > 0 && 1 > 2) {
+    if (!enemys2->check && enemys2->x > 0) {
       enemys2->check = 1;
       enemys2->tick = enemys2->x;
     } else if (enemys2->x > 0) {
-      if (enemys2->y > y && enemys2->y < y + 3 && enemys2->x == x) {
+      if (enemys2->y > y && enemys2->y < y + 3 && enemys2->tick <= x + 9 ||
+          enemys2->y > y && enemys2->y < y + 3 && enemys2->tick <= x + 12 ||
+          enemys2->y > y && enemys2->y < y + 3 && enemys2->tick <= x + 3) {
         return 0;
+      }
+      if (sec_bullet_ptr_for_spaceship->y >= enemys2->y &&
+              sec_bullet_ptr_for_spaceship->y <= enemys2->y + 3 &&
+              sec_bullet_ptr_for_spaceship->x == enemys2->x ||
+          sec_bullet_ptr_for_spaceship->y >= enemys2->y &&
+              sec_bullet_ptr_for_spaceship->y <= enemys2->y + 3 &&
+              sec_bullet_ptr_for_spaceship->x == enemys2->x - 3) {
+        enemys2->x = 0;
+        continue;
       }
       move(enemys2->y, enemys2->tick);
       printw("-");
@@ -354,7 +394,7 @@ int main(int argc, char **argv) {
     }
     // end enemy shoot
     move_space_ship(x, y, b);
-    if (enemys2->x > 0 && 1 > 2) {
+    if (conut % 4 == 0 && enemys2->x > 0) {
       move_aline_space_ship(enemys2->y, enemys2->x, KEY_LEFT);
     } else if (!enemys2->x) {
       remove_alien_spaceship(enemys2->x, enemys2->y);
@@ -364,5 +404,6 @@ int main(int argc, char **argv) {
     } else {
       enemys2 = enemys;
     }
+    conut++;
   }
 }
