@@ -1,0 +1,26 @@
+{
+  "levels": [
+    {
+      "levelNumber": 1,
+      "timeLimit": 120,
+      "enemiesKilled": 10,
+      "totalEnemies": 15,
+      "powerUps": 3
+    },
+    {
+      "levelNumber": 2,
+      "timeLimit": 150,
+      "enemiesKilled": 15,
+      "totalEnemies": 20,
+      "powerUps": 4
+    },
+    // ... More levels ...
+    {
+      "levelNumber": 20,
+      "timeLimit": 180,
+      "enemiesKilled": 25,
+      "totalEnemies": 30,
+      "powerUps": 5
+    }
+  ]
+}
