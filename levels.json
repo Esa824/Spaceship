@@ -2,14 +2,15 @@
   "levels": [
     {
       "levelNumber": 1,
-      "timeLimit": 120,
+      "timeLimit": 30,
       "enemiesKilled": 10,
       "totalEnemies": 15,
-      "powerUps": 3
+      "healthUpPowerUp": 2,
+      "speedUpPowerUp" : 1
     },
     {
       "levelNumber": 2,
-      "timeLimit": 150,
+      "timeLimit": 25,
       "enemiesKilled": 15,
       "totalEnemies": 20,
       "powerUps": 4
@@ -17,7 +18,7 @@
     // ... More levels ...
     {
       "levelNumber": 20,
-      "timeLimit": 180,
+      "timeLimit": 50,
       "enemiesKilled": 25,
       "totalEnemies": 30,
       "powerUps": 5
