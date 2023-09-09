@@ -1,19 +1,4 @@
-#include <atomic>
-#include <chrono>
-#include <cstdlib>
-#include <fstream>
-#include <iostream>
-#include <json-c/json.h>
-#include <mutex>
-#include <ncurses.h>
-#include <pthread.h>
-#include <stdlib.h>
-#include <string.h>
-#include <string>
-#include <thread>
-#include <time.h>
-#include <unistd.h>
-#include <vector>
+#include <curses.h>
 #include "structs.h"
 #include "menu_screens.h"
 
@@ -33,6 +18,6 @@ int main() {
   init_pair(5, COLOR_YELLOW, COLOR_BLACK);
   init_pair(6, COLOR_ORANGE, COLOR_BLACK);
   main_menu();
-  curs_set(0); // Hide the cursor
+  curs_set(1); // Hide the cursor
   return 0;
 }
